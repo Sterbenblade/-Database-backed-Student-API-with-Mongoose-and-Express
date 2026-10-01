@@ -16,7 +16,6 @@ router.get("/:id", getStudentById);
 router.post("/", auth, createStudent);
 router.patch("/:id", auth, updateStudent);
 router.delete("/:id", auth, deleteStudent);
-
 router.delete("/:id", auth, requireRole("admin"), deleteStudent);
 
 module.exports = router;

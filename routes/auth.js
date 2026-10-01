@@ -5,6 +5,13 @@ const User = require("../models/User");
 const auth = require("../middleware/auth");
 const router = express.Router();
 
+router.get("/me", auth, async (req, res) => {
+    res.json({
+        id: req.user.id,
+        role: req.user.role
+    });
+});
+
 router.post("/register", async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -21,7 +28,7 @@ router.post("/register", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({ email: normalizedEmail, password: hashedPassword });
         const token = jwt.sign(
-            { userId: user._id, email: user.email },
+            { userId: user._id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
@@ -29,7 +36,7 @@ router.post("/register", async (req, res) => {
         res.status(201).json({
             message: "User registered successfully",
             token,
-            user: { id: user._id, email: user.email },
+            user: { id: user._id, email: user.email, role: user.role },
         });
     } catch (error) {
         if (error.code === 11000) {
@@ -52,14 +59,14 @@ router.post("/login", async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user._id, email: user.email },
+            { userId: user._id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "1h" }
         );
         res.json({
             message: "Login successful",
             token,
-            user: { id: user._id, email: user.email },
+            user: { id: user._id, email: user.email, role: user.role },
         });
     } catch (error) {
         res.status(500).json({ error: "Server error" });
