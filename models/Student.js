@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const auth = require("../middleware/auth");
 const studentSchema = new mongoose.Schema({
     name: {
         type: String,
